@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EZyCar - จองบริการซ่อมรถออนไลน์</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <h1 class="logo">EZyCar</h1>
+            <div class="nav-links" id="navLinks">
+                <a href="#home">หน้าแรก</a>
+                <a href="#providers">ศูนย์บริการ</a>
+                <a href="#bookings">การจอง</a>
+                <a href="#" id="authLink">เข้าสู่ระบบ</a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container">
+        <section id="home" class="section">
+            <h2>ยินดีต้อนรับสู่ EZyCar</h2>
+            <p>ระบบจองบริการซ่อมและบำรุงรักษารถยนต์ออนไลน์</p>
+        </section>
+
+        <!-- Auth Section -->
+        <section id="auth-section" class="section">
+            <div class="card">
+                <h3 id="authTitle">เข้าสู่ระบบ</h3>
+                <form id="authForm">
+                    <div class="form-group">
+                        <label>อีเมล</label>
+                        <input type="email" id="email" required>
+                    </div>
+                    <div class="form-group">
+                        <label>รหัสผ่าน</label>
+                        <input type="password" id="password" required>
+                    </div>
+                    <div class="form-group" id="nameGroup" style="display:none;">
+                        <label>ชื่อ</label>
+                        <input type="text" id="name">
+                    </div>
+                    <div class="form-group" id="telGroup" style="display:none;">
+                        <label>เบอร์โทร</label>
+                        <input type="tel" id="tel">
+                    </div>
+                    <div class="form-group" id="roleGroup" style="display:none;">
+                        <label>ประเภท</label>
+                        <select id="role">
+                            <option value="user">ผู้ใช้งาน</option>
+                            <option value="admin">ผู้ดูแลระบบ</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary">เข้าสู่ระบบ</button>
+                    <p class="toggle-auth">
+                        <a href="#" id="toggleAuth">สร้างบัญชีใหม่</a>
+                    </p>
+                </form>
+            </div>
+        </section>
+
+        <!-- Providers Section -->
+        <section id="providers-section" class="section" style="display:none;">
+            <h2>ศูนย์บริการทั้งหมด</h2>
+            <div id="providersList" class="grid"></div>
+        </section>
+
+        <!-- Provider Detail Section -->
+        <section id="provider-detail" class="section" style="display:none;">
+            <button class="btn btn-secondary" onclick="showProviders()">← กลับ</button>
+            <div id="providerInfo" class="card"></div>
+            <div class="card">
+                <h3>จองบริการ</h3>
+                <form id="bookingForm">
+                    <div class="form-group">
+                        <label>วันที่</label>
+                        <input type="date" id="bookingDate" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">จองเลย</button>
+                </form>
+            </div>
+        </section>
+
+        <!-- Bookings Section -->
+        <section id="bookings-section" class="section" style="display:none;">
+            <h2>การจองของฉัน</h2>
+            <div id="bookingsList" class="grid"></div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 EZyCar. All rights reserved.</p>
+    </footer>
+
+    <script src="/js/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,202 @@
+@startuml EzyCar Class Diagram
+left to right direction
+
+skinparam packageStyle rectangle
+skinparam classAttributeIconSize 0
+
+package "EzyCar - Car Service Booking Platform" {
+
+    ' ==========================================
+    ' Application Entry Point
+    ' ==========================================
+    class "<<Application>>\nEzyCarService" as EzyCarService {
+        +express()
+        +connectDB()
+        +middleware()
+        +routes()
+    }
+
+    ' ==========================================
+    ' Authentication Resources
+    ' ==========================================
+    class "<<Resource>>\nAuthentication" as ResourceAuth {
+        <<POST>> +register(): User
+        <<POST>> +login(): Token
+        <<GET>> +getMe(): User
+        <<GET>> +logout(): void
+    }
+
+    class "<<Representation>>\nUser" as RepresentationUser {
+        -_id: ObjectId
+        -name: String
+        -email: String
+        -telnum: String
+        -password: String (hashed)
+        -role: String (user/admin)
+        -createdAt: Date
+        --
+        +getSignedJwtToken(): String
+        +matchPassword(password): Boolean
+    }
+
+    ' ==========================================
+    ' Provider Resources
+    ' ==========================================
+    class "<<Resource>>\nProviders" as ResourceProviders {
+        <<GET>> +getProviders(): Provider[]
+        <<POST>> +createProvider(): Provider
+    }
+
+    class "<<Resource>>\nProvider" as ResourceProvider {
+        <<GET>> +getProvider(): Provider
+        <<PUT>> +updateProvider(): Provider
+        <<DELETE>> +deleteProvider(): void
+    }
+
+    class "<<Representation>>\nProvider" as RepresentationProvider {
+        -_id: ObjectId
+        -name: String
+        -address: String
+        -tel: String
+        -createdAt: Date
+    }
+
+    ' ==========================================
+    ' Booking Resources
+    ' ==========================================
+    class "<<Resource>>\nBookings" as ResourceBookings {
+        <<GET>> +getBookings(): Booking[]
+        <<POST>> +createBooking(): Booking
+        <<GET>> +getMyHistory(): Booking[]
+    }
+
+    class "<<Resource>>\nBooking" as ResourceBooking {
+        <<GET>> +getBooking(): Booking
+        <<PUT>> +updateBooking(): Booking
+        <<DELETE>> +deleteBooking(): void
+    }
+
+    class "<<Representation>>\nBooking" as RepresentationBooking {
+        -_id: ObjectId
+        -bookingDate: Date
+        -user: ObjectId (ref: User)
+        -provider: ObjectId (ref: Provider)
+        -createdAt: Date
+    }
+
+    ' ==========================================
+    ' Middleware Components
+    ' ==========================================
+    class "<<Middleware>>\nAuth" as MiddlewareAuth {
+        +protect(): void
+        +authorize(...roles): void
+    }
+
+    class "<<Middleware>>\nSecurity" as MiddlewareSecurity {
+        +helmet(): void
+        +xss(): void
+        +mongoSanitize(): void
+        +rateLimit(): void
+        +hpp(): void
+        +cors(): void
+    }
+
+    ' ==========================================
+    ' Database Models
+    ' ==========================================
+    package "MongoDB Database" {
+        class "<<Collection>>\nusers" as DBUsers {
+            +UserSchema
+        }
+
+        class "<<Collection>>\nproviders" as DBProviders {
+            +ProviderSchema
+        }
+
+        class "<<Collection>>\nbookings" as DBBookings {
+            +BookingSchema
+        }
+    }
+}
+
+' ==========================================
+' Relationships - Routes
+' ==========================================
+EzyCarService ..> ResourceAuth: "/api/v1/auth\n<<Path>>"
+EzyCarService ..> ResourceProviders: "/api/v1/providers\n<<Path>>"
+EzyCarService ..> ResourceBookings: "/api/v1/bookings\n<<Path>>"
+
+' ==========================================
+' Relationships - Resources to Representations
+' ==========================================
+ResourceAuth ..> RepresentationUser: "<<use>>"
+ResourceProviders ..> ResourceProvider: "/{providerId}\n<<Path>>"
+ResourceProvider ..> RepresentationProvider: "<<use>>"
+ResourceBookings ..> ResourceBooking: "/{bookingId}\n<<Path>>"
+ResourceBooking ..> RepresentationBooking: "<<use>>"
+
+' ==========================================
+' Relationships - Middleware
+' ==========================================
+ResourceProviders ..> MiddlewareAuth: "<<protected>>"
+ResourceBookings ..> MiddlewareAuth: "<<protected>>"
+EzyCarService ..> MiddlewareSecurity: "<<uses>>"
+
+' ==========================================
+' Relationships - Database
+' ==========================================
+RepresentationUser ..> DBUsers: "<<stored in>>"
+RepresentationProvider ..> DBProviders: "<<stored in>>"
+RepresentationBooking ..> DBBookings: "<<stored in>>"
+
+' ==========================================
+' Relationships - References
+' ==========================================
+RepresentationBooking ..> RepresentationUser: "<<references>>"
+RepresentationBooking ..> RepresentationProvider: "<<references>>"
+
+' ==========================================
+' Notes
+' ==========================================
+note right of ResourceAuth
+  Public endpoints
+  - register
+  - login
+
+  Protected endpoints
+  - getMe
+  - logout
+end note
+
+note right of ResourceProviders
+  Admin only
+  - createProvider
+  - updateProvider
+  - deleteProvider
+
+  Public
+  - getProviders
+  - getProvider
+end note
+
+note right of ResourceBookings
+  User & Admin
+  - createBooking
+  - getMyHistory
+  - updateBooking
+  - deleteBooking
+
+  Admin only
+  - getBookings (all)
+
+end note
+
+note bottom of RepresentationBooking
+  Populated fields
+  - user (name, email)
+  - provider (name, address, tel)
+
+  Sorted by: bookingDate (desc)
+end note
+
+@enduml
